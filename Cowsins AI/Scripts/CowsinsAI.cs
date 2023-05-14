@@ -4,6 +4,9 @@ using UnityEngine.AI;
 
 public class CowsinsAI : MonoBehaviour
 {
+    #region Generic Variables
+
+    public States currentState;
     public float waitTime = 1f;
     public bool useWaypoints;
     public Transform[] waypoints;
@@ -18,6 +21,8 @@ public class CowsinsAI : MonoBehaviour
     int currentWaypoint = 0;
     float waitTimer = 0f;
     NavMeshAgent agent;
+
+    #endregion
 
     #region Wander AI Variables
 
@@ -87,13 +92,11 @@ public class CowsinsAI : MonoBehaviour
     public bool shooter;
     #endregion
 
-    public States currentState;
-
     public void Start()
     {
         currentState = States.Idle;
         agent = gameObject.GetComponentInChildren<NavMeshAgent>();
-        //player = GameObject.FindGameObjectWithTag("Player");
+        player = GameObject.FindGameObjectWithTag("Player");
         StartCoroutine(FOVRoutine());
     }
 
@@ -158,39 +161,6 @@ public class CowsinsAI : MonoBehaviour
         }
     }
 
-    void AttackState()
-    {
-        if (shooter == true)
-        {
-            ShooterAttack();
-        }
-
-        else if (melee == true)
-        {
-            MeleeAttack();
-        }
-
-        if (canSeePlayer == false)
-        {
-            currentState = States.Search;
-        }
-
-    }
-
-    void ResetAttackShooter()
-    {
-        alreadyAttackedShooter = false;
-
-        shooterAnimator.SetBool("firing", false);
-    }
-
-    void ResetAttackMelee()
-    {
-        alreadyAttackedMelee = false;
-
-        meleeAnimator.SetBool("attacking", false);
-    }
-
     void SearchState()
     {
         agent.isStopped = true;
@@ -236,6 +206,8 @@ public class CowsinsAI : MonoBehaviour
         }
     }
 
+    #region Field Of View Functions
+
     private IEnumerator FOVRoutine()
     {
         WaitForSeconds wait = new WaitForSeconds(0.2f);
@@ -279,6 +251,8 @@ public class CowsinsAI : MonoBehaviour
             canSeePlayer = false;
         }
     }
+
+    #endregion
 
     void Waypoints()
     {
@@ -335,6 +309,83 @@ public class CowsinsAI : MonoBehaviour
 
     #endregion
 
+    #region Attack States
+    void AttackState()
+    {
+        if (shooter == true)
+        {
+            ShooterAttack();
+        }
+
+        else if (melee == true)
+        {
+            MeleeAttack();
+        }
+
+        if (canSeePlayer == false)
+        {
+            currentState = States.Search;
+        }
+
+    }
+
+    // Shooter Functions
+    void ResetAttackShooter()
+    {
+        alreadyAttackedShooter = false;
+
+        shooterAnimator.SetBool("firing", false);
+    }
+    
+    void ShooterAttack()
+    {
+        if (agent.velocity != Vector3.zero)
+        {
+            shooterAnimator.SetBool("combatWalk", true);
+            shooterAnimator.SetBool("isWalking", false);
+            shooterAnimator.SetBool("combatIdle", false);
+        }
+        else if (agent.velocity == Vector3.zero)
+        {
+            shooterAnimator.SetBool("combatWalk", false);
+            shooterAnimator.SetBool("combatIdle", true);
+        }
+
+        float distanceToPlayer = Vector3.Distance(player.transform.position, agent.transform.position);
+
+        agent.destination = player.transform.position;
+
+        if (distanceToPlayer <= shootDistance)
+        {
+            inShootingDistance = true;
+            agent.SetDestination(transform.position);
+            transform.LookAt(player.transform);
+            if (!alreadyAttackedShooter)
+            {
+                Rigidbody rb = Instantiate(projectile, firePoint.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+                rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+                rb.AddForce(transform.up * 2f, ForceMode.Impulse);
+                alreadyAttackedShooter = true;
+                Invoke(nameof(ResetAttackShooter), timeBetweenAttacks);
+                shooterAnimator.SetBool("firing", true);
+            }
+        }
+        else if (distanceToPlayer >= shootDistance)
+        {
+            inShootingDistance = false;
+            agent.isStopped = false;
+            shooterAnimator.SetBool("firing", false);
+        }
+    }
+
+    // Melee Functions
+    void ResetAttackMelee()
+    {
+        alreadyAttackedMelee = false;
+
+        meleeAnimator.SetBool("attacking", false);
+    }
+
     void MeleeAttack()
     {
         if (agent.velocity != Vector3.zero)
@@ -381,44 +432,7 @@ public class CowsinsAI : MonoBehaviour
         }
     }
 
-    void ShooterAttack()
-    {
-        if (agent.velocity != Vector3.zero)
-        {
-            shooterAnimator.SetBool("combatWalk", true);
-            shooterAnimator.SetBool("isWalking", false);
-            shooterAnimator.SetBool("combatIdle", false);
-        }
-        else if (agent.velocity == Vector3.zero)
-        {
-            shooterAnimator.SetBool("combatWalk", false);
-            shooterAnimator.SetBool("combatIdle", true);
-        }
+    
 
-        float distanceToPlayer = Vector3.Distance(player.transform.position, agent.transform.position);
-
-        agent.destination = player.transform.position;
-
-        if (distanceToPlayer <= shootDistance)
-        {
-            inShootingDistance = true;
-            agent.SetDestination(transform.position);
-            transform.LookAt(player.transform);
-            if (!alreadyAttackedShooter)
-            {
-                Rigidbody rb = Instantiate(projectile, firePoint.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
-                rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
-                rb.AddForce(transform.up * 2f, ForceMode.Impulse);
-                alreadyAttackedShooter = true;
-                Invoke(nameof(ResetAttackShooter), timeBetweenAttacks);
-                shooterAnimator.SetBool("firing", true);
-            }
-        }
-        else if (distanceToPlayer >= shootDistance)
-        {
-            inShootingDistance = false;
-            agent.isStopped = false;
-            shooterAnimator.SetBool("firing", false);
-        }
-    }
+    #endregion
 }
