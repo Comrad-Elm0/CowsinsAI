@@ -1383,10 +1383,6 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3821392260112770696, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 3a8854975c9581a47986997192ae4120, type: 2}
     - target: {fileID: 7083098759444452672, guid: f100632783e945f408a61c1c01b792c8, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -1431,58 +1427,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504756, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: maxShield
-      value: 100
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504756, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: healAmount
-      value: 10
-      objectReference: {fileID: 0}
     - target: {fileID: 7568273230633504762, guid: f100632783e945f408a61c1c01b792c8, type: 3}
       propertyPath: m_Name
       value: Y Bot - Shooter
       objectReference: {fileID: 0}
     - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: melee
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 829218733}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: shooter
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: useWaypoints
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: attackRadiusDebug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: canSeePlayerDebug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: searchRadiusDebug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: meleeDistanceDebug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: shootingDistanceDebug
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: coverPoints.Array.size
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
       propertyPath: waypoints.Array.data[0]
       value: 
@@ -1515,10 +1467,6 @@ PrefabInstance:
       propertyPath: waypoints.Array.data[7]
       value: 
       objectReference: {fileID: 662860227}
-    - target: {fileID: 7568273230633504763, guid: f100632783e945f408a61c1c01b792c8, type: 3}
-      propertyPath: coverPoints.Array.data[0]
-      value: 
-      objectReference: {fileID: 1082582716}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f100632783e945f408a61c1c01b792c8, type: 3}
 --- !u!1001 &7872055225385403710
@@ -1601,17 +1549,9 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7872055226755108661, guid: b066a171525110741903919dfc40f67b, type: 3}
-      propertyPath: melee
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7872055226755108661, guid: b066a171525110741903919dfc40f67b, type: 3}
       propertyPath: player
       value: 
       objectReference: {fileID: 829218733}
-    - target: {fileID: 7872055226755108661, guid: b066a171525110741903919dfc40f67b, type: 3}
-      propertyPath: shooter
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7872055226755108661, guid: b066a171525110741903919dfc40f67b, type: 3}
       propertyPath: waypoints.Array.data[0]
       value: 
@@ -1664,9 +1604,5 @@ PrefabInstance:
       propertyPath: m_AnchorMin.x
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 7872055227368922659, guid: b066a171525110741903919dfc40f67b, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 3a8854975c9581a47986997192ae4120, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b066a171525110741903919dfc40f67b, type: 3}

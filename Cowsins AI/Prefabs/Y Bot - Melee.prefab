@@ -2435,6 +2435,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitTime: 2
+  useWaypoints: 0
   waypoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -2445,6 +2446,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   shooterAnimator: {fileID: 0}
+  wanderRadius: 10
+  minWanderDistance: 2
+  maxWanderDistance: 5
   searchRadius: 9
   searchAngle: 126
   player: {fileID: 0}
@@ -2488,7 +2492,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: Y Bot - Melee
+  health: 0
   maxHealth: 100
+  shield: 0
   maxShield: 0
   healthSlider: {fileID: 7872055226612733124}
   shieldSlider: {fileID: 7872055225878135275}
@@ -3378,7 +3384,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4565884009001823619, guid: 3f2fddd124dea2044bbaa88ae77e1c56, type: 3}
+  - {fileID: 2100000, guid: 3a8854975c9581a47986997192ae4120, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

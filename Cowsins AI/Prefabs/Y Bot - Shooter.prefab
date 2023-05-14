@@ -1836,7 +1836,7 @@ SkinnedMeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: -4565884009001823619, guid: 3f2fddd124dea2044bbaa88ae77e1c56, type: 3}
+  - {fileID: 2100000, guid: 3a8854975c9581a47986997192ae4120, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -3119,6 +3119,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waitTime: 2
+  useWaypoints: 0
   waypoints:
   - {fileID: 0}
   - {fileID: 0}
@@ -3129,6 +3130,9 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   shooterAnimator: {fileID: 7568273230633504759}
+  wanderRadius: 10
+  minWanderDistance: 2
+  maxWanderDistance: 5
   searchRadius: 9
   searchAngle: 126
   player: {fileID: 0}
@@ -3140,11 +3144,11 @@ MonoBehaviour:
     m_Bits: 1073741824
   canSeePlayer: 0
   waitTimeToSearch: 0
-  shootingDistanceDebug: 0
-  meleeDistanceDebug: 0
-  canSeePlayerDebug: 0
-  searchRadiusDebug: 0
-  attackRadiusDebug: 0
+  shootingDistanceDebug: 1
+  meleeDistanceDebug: 1
+  canSeePlayerDebug: 1
+  searchRadiusDebug: 1
+  attackRadiusDebug: 1
   projectile: {fileID: 5270934708933106892, guid: ca11e4e4931da7c4eb17c495e506a2c0, type: 3}
   firePoint: {fileID: 5660421211945143325}
   shootDistance: 5
@@ -3156,8 +3160,8 @@ MonoBehaviour:
   meleeDistance: 0
   inMeleeDistance: 0
   gunShotSfx: {fileID: 0}
-  melee: 1
-  shooter: 0
+  melee: 0
+  shooter: 1
   currentState: 0
 --- !u!114 &7568273230633504756
 MonoBehaviour:
@@ -3172,8 +3176,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _name: Y Bot - Shooter
+  health: 0
   maxHealth: 100
-  maxShield: 0
+  shield: 0
+  maxShield: 100
   healthSlider: {fileID: 355176209225599853}
   shieldSlider: {fileID: 355176209601965926}
   showUI: 1
