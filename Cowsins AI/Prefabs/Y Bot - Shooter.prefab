@@ -3118,6 +3118,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 35d1a94af98c087429a868804d3d4aa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  currentState: 0
   waitTime: 2
   useWaypoints: 0
   waypoints:
@@ -3132,7 +3133,7 @@ MonoBehaviour:
   shooterAnimator: {fileID: 7568273230633504759}
   wanderRadius: 10
   minWanderDistance: 2
-  maxWanderDistance: 5
+  maxWanderDistance: 10
   searchRadius: 9
   searchAngle: 126
   player: {fileID: 0}
@@ -3162,7 +3163,6 @@ MonoBehaviour:
   gunShotSfx: {fileID: 0}
   melee: 0
   shooter: 1
-  currentState: 0
 --- !u!114 &7568273230633504756
 MonoBehaviour:
   m_ObjectHideFlags: 0
