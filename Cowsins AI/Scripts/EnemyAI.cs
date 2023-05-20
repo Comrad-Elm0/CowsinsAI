@@ -21,7 +21,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         public UnityEvent OnSpawn, OnShoot, OnDamaged, OnDeath;
     }
 
-    [Tooltip("Name of the enemy. This will appear on the killfeed"),SerializeField]
+    [Tooltip("Name of the enemy. This will appear on the killfeed"), SerializeField]
     private string _name;
 
     public float health; 
@@ -133,12 +133,11 @@ public class EnemyAI : MonoBehaviour, IDamageable
         {
             UI.GetComponent<UIController>().AddKillfeed(_name);
         }
-        Destroy(this.gameObject);
     }
 }
 #if UNITY_EDITOR
 [System.Serializable]
-[CustomEditor(typeof(Enemy))]
+[CustomEditor(typeof(EnemyAI))]
 public class EnemyEditorAI : Editor
 {
 
