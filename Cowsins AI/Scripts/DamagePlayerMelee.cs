@@ -1,5 +1,6 @@
 using UnityEngine;
-
+namespace cowsins.AI
+{ 
 public class DamagePlayerMelee : MonoBehaviour
 {
     public float damageAmount;
@@ -11,4 +12,5 @@ public class DamagePlayerMelee : MonoBehaviour
             collision.gameObject.GetComponent<PlayerStats>().Damage(damageAmount);
         }
     }
+}
 }

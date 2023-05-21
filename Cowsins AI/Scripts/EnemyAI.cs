@@ -8,7 +8,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.Events;
-
+namespace cowsins
+{
 /// <summary>
 /// Super simple enemy script that allows any object with this component attached to receive damage,aim towards the player and shoot at it.
 /// This is not definitive and it will 100% be modified and re structured in future updates
@@ -21,7 +22,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         public UnityEvent OnSpawn, OnShoot, OnDamaged, OnDeath;
     }
 
-    [Tooltip("Name of the enemy. This will appear on the killfeed"), SerializeField]
+    [Tooltip("Name of the enemy. This will appear on the killfeed"),SerializeField]
     private string _name;
 
     public float health; 
@@ -77,7 +78,6 @@ public class EnemyAI : MonoBehaviour, IDamageable
             Destroy(shieldSlider);
         }
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        UI = player.GetComponent<PlayerMovement>().UI;
     }
 
     // Update is called once per frame
@@ -93,8 +93,9 @@ public class EnemyAI : MonoBehaviour, IDamageable
     /// <summary>
     /// Since it is IDamageable, it can take damage, if a shot is landed, damage the enemy
     /// </summary>
-    public virtual void Damage(float damage)
+    public virtual void Damage(float _damage)
     {
+        float damage = Mathf.Abs(_damage); 
         float oldDmg = damage; 
         if (damage <= shield) // Shield will be damaged
         {
@@ -112,7 +113,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
 
         // Custom event on damaged
         events.OnDamaged.Invoke();
-        UI.GetComponent<UIController>().Hitmarker();
+        UIEvents.onEnemyHit.Invoke();
         // If you do not want to show a damage pop up, stop, do not continue
         if (!showUI) return;
             GameObject popup = Instantiate(damagePopUp,transform.position,Quaternion.identity) as GameObject;
@@ -133,6 +134,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         {
             UI.GetComponent<UIController>().AddKillfeed(_name);
         }
+        Destroy(this.gameObject);
     }
 }
 #if UNITY_EDITOR
@@ -171,3 +173,4 @@ public class EnemyEditorAI : Editor
     }
 }
 #endif
+}

@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+namespace cowsins.AI {
 public class ProjectileDamage : MonoBehaviour
 {
     private void Awake()
@@ -25,4 +25,5 @@ public class ProjectileDamage : MonoBehaviour
     {
         yield return new WaitForSeconds(8);
     }
+}
 }
