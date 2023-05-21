@@ -15,4 +15,4 @@ This asset currently has the ability to:
 Join the Cowsins Discord!
 
 ### Version Number
-0.1.0
+1.0.1
