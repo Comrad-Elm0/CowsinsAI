@@ -29,7 +29,9 @@ public class CowsinsAIEditor : Editor
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("useWaypoints"));
                     EditorGUILayout.Space(5);
-                    if(cai.useWaypoints == true)
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("useRagdoll"));
+                    EditorGUILayout.Space(5);
+                    if (cai.useWaypoints == true)
                     {
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("waypoints"));
                         EditorGUILayout.Space(5);
