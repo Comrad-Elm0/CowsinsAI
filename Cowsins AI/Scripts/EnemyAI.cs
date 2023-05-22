@@ -23,7 +23,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
     }
 
     [Tooltip("Name of the enemy. This will appear on the killfeed"),SerializeField]
-    private string _name;
+    protected string _name;
 
     public float health; 
     [Tooltip("initial enemy health "), SerializeField] 
