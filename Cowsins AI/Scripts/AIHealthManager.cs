@@ -27,8 +27,6 @@ namespace cowsins.AI
             if (shieldSlider != null) shieldSlider.gameObject.SetActive(false);
             if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-            UIEvents.onEnemyKilled.Invoke(_name);
-
             if (cai.useRagdoll == true)
             {
                 Rigidbody[] rigidBodies = gameObject.GetComponentsInChildren<Rigidbody>();
