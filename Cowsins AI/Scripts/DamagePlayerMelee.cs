@@ -1,16 +1,16 @@
 using UnityEngine;
 namespace cowsins.AI
-{ 
-public class DamagePlayerMelee : MonoBehaviour
 {
-    public float damageAmount;
-
-    private void OnCollisionEnter(Collision collision)
+    public class DamagePlayerMelee : MonoBehaviour
     {
-        if(collision.gameObject.CompareTag("Player"))
+        public float damageAmount;
+
+        private void OnCollisionEnter(Collision collision)
         {
-            collision.gameObject.GetComponent<PlayerStats>().Damage(damageAmount);
+            if (collision.gameObject.CompareTag("Player"))
+            {
+                collision.gameObject.GetComponent<PlayerStats>().Damage(damageAmount);
+            }
         }
     }
-}
 }

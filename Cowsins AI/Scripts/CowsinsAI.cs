@@ -20,6 +20,7 @@ public class CowsinsAI : MonoBehaviour
 
     int currentWaypoint = 0;
     float waitTimer = 0f;
+    public bool useRagdoll;
     NavMeshAgent agent;
 
     #endregion
