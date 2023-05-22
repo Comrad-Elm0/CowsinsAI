@@ -1,5 +1,5 @@
 /// <summary>
-/// This script belongs to cowsins™ as a part of the cowsins´ FPS Engine. All rights reserved. 
+/// This script belongs to cowsinsâ„¢ as a part of the cowsinsÂ´ FPS Engine. All rights reserved. 
 /// </summary>
 #if UNITY_EDITOR
 using UnityEditor;
@@ -130,10 +130,7 @@ public class EnemyAI : MonoBehaviour, IDamageable
         events.OnDeath.Invoke();
 
         // Does it display killfeed on death? 
-        if (UI.GetComponent<UIController>().displayEvents)
-        {
-            UI.GetComponent<UIController>().AddKillfeed(_name);
-        }
+        UIEvents.onEnemyKilled.Invoke(_name);
         Destroy(this.gameObject);
     }
 }
