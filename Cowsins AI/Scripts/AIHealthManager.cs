@@ -19,10 +19,7 @@ public class AIHealthManager : EnemyAI
         if (shieldSlider != null) shieldSlider.gameObject.SetActive(false);
         if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-        if (UI.GetComponent<UIController>().displayEvents)
-        {
-            UI.GetComponent<UIController>().AddKillfeed(name);
-        }
+        UIEvents.onEnemyKilled.Invoke(_name);
 
         base.Die();
     }
