@@ -6,11 +6,12 @@ public class CowsinsAI : MonoBehaviour
 {
     #region Generic Variables
 
-    public States currentState;
-    public float waitTime = 1f;
-    public bool useWaypoints;
+    [Tooltip("WILL NOT SAVE CHANGES WHEN ENTERING PLAY")] public States currentState;
+    [Tooltip("Whether the AI should attack the player")] public bool dumbAI = true;
+    [Tooltip("How long the AI should wait until going to the next waypoint")] public float waitTime = 1f;
+    [Tooltip("If the AI should use waypoints or randomly move about")] public bool useWaypoints;
     public Transform[] waypoints;
-    public Animator shooterAnimator;
+    [Tooltip("The animator that the AI will use for shooter")] public Animator shooterAnimator;
     public enum States
     {
         Idle,
@@ -32,26 +33,26 @@ public class CowsinsAI : MonoBehaviour
     float waitTimeBetweenWander = 2f;
     float wanderTimer = 0f;
 
-    public float wanderRadius = 10f;
-    public float minWanderDistance = 2f;
-    public float maxWanderDistance = 5f;
+    [Tooltip("How far the AI should wander until changing path")] public float wanderRadius = 10f;
+    [Tooltip("Minimum amount of steps it should do until moving again")] public float minWanderDistance = 2f;
+    [Tooltip("Maximum amount of steps it should do until moving again")] public float maxWanderDistance = 5f;
 
     #endregion
 
     #region Location Variables
 
     [Header("Player Searching Variables")]
-    public float searchRadius;
+    [Tooltip("The radius in what the AI can see")] public float searchRadius;
     [Range(0, 360)]
-    public float searchAngle;
+    [Tooltip("The FOV of what the AI can see")] public float searchAngle;
 
-    public GameObject player;
+    [HideInInspector] public GameObject player;
 
-    public LayerMask targetMask;
-    public LayerMask obstructionMask;
-    public bool canSeePlayer;
+    [Tooltip("The layer in which the AI will shoot at")] public LayerMask targetMask;
+    [Tooltip("The layer in which the AI cannot see through")] public LayerMask obstructionMask;
+    [Tooltip("Debug variable, changing will not make any difference")] public bool canSeePlayer;
 
-    public float waitTimeToSearch;
+    [Tooltip("How long the AI will spend trying to find the player after losing sight")] public float waitTimeToSearch;
 
     float searchTimer = 5;
     float currentSearchTime;
@@ -69,20 +70,20 @@ public class CowsinsAI : MonoBehaviour
     #endregion
 
     #region Shooter Variables
-    public GameObject projectile;
-    public Transform firePoint;
-    public float shootDistance;
+    [Tooltip("The projectile prefab that the AI will use")]public GameObject projectile;
+    [Tooltip("Where the bullet will shoot from")] public Transform firePoint;
+    [Tooltip("How far the AI should shoot from")] public float shootDistance;
     public bool inShootingDistance;
-    public float timeBetweenAttacks;
+    [Tooltip("How long the AI should wait inbetween each shot")] public float timeBetweenAttacks;
     bool alreadyAttackedShooter;
     bool alreadyAttackedMelee;
     #endregion
 
     #region Melee Variables
-    public Animator meleeAnimator;
-    public float waitBetweenAttack;
+    [Tooltip("The animator that the AI will use for melee")] public Animator meleeAnimator;
+    [Tooltip("How long the AI will wait inbetween attacks")] public float waitBetweenAttack;
     public float waitBetweenSwingDelay;
-    public float meleeDistance;
+    [Tooltip("How far the AI will stand from the player whilst attacking")] public float meleeDistance;
     public bool inMeleeDistance;
     #endregion
 
@@ -105,11 +106,11 @@ public class CowsinsAI : MonoBehaviour
     {
         if (currentState == States.Idle)
         {
-            IdleState();
+            IdleHostileState();
         }
         else if (currentState == States.Search)
         {
-            SearchState();
+            SearchHostileState();
         }
         else if (currentState == States.Attack)
         {
@@ -117,54 +118,59 @@ public class CowsinsAI : MonoBehaviour
         }
     }
 
-    void IdleState()
+    void IdleHostileState()
     {
-        agent.isStopped = false;
-
-        if (useWaypoints == true)
+        if (!dumbAI)
         {
-            Waypoints();
-        }
-        else
-        {
-            RandomMove();
-        }
+            agent.isStopped = false;
 
-        FieldOfViewCheck();
-
-        if (canSeePlayer == true)
-        {
-            currentState = States.Attack;
-        }
-
-        if (shooter == true)
-        {
-            if (agent.velocity != Vector3.zero)
+            if (useWaypoints == true)
             {
-                shooterAnimator.SetBool("isWalking", true);
+                Waypoints();
             }
-            else if (agent.velocity == Vector3.zero)
+            else
             {
-                shooterAnimator.SetBool("isWalking", false);
+                RandomMove();
             }
-        }
 
-        if (melee == true)
-        {
-            if (agent.velocity != Vector3.zero)
+            FieldOfViewCheck();
+
+            if (canSeePlayer == true)
             {
-                meleeAnimator.SetBool("isWalking", true);
+                currentState = States.Attack;
             }
-            else if (agent.velocity == Vector3.zero)
+
+            if (shooter == true)
             {
-                meleeAnimator.SetBool("isWalking", false);
+                if (agent.velocity != Vector3.zero)
+                {
+                    shooterAnimator.SetBool("isWalking", true);
+                }
+                else if (agent.velocity == Vector3.zero)
+                {
+                    shooterAnimator.SetBool("isWalking", false);
+                }
+            }
+
+            if (melee == true)
+            {
+                if (agent.velocity != Vector3.zero)
+                {
+                    meleeAnimator.SetBool("isWalking", true);
+                }
+                else if (agent.velocity == Vector3.zero)
+                {
+                    meleeAnimator.SetBool("isWalking", false);
+                }
             }
         }
     }
 
-    void SearchState()
+    void SearchHostileState()
     {
-        agent.isStopped = true;
+        agent.isStopped = false;
+
+        RandomMove();
 
         if (!searchTimerStarted)
         {
@@ -340,26 +346,32 @@ public class CowsinsAI : MonoBehaviour
     
     void ShooterAttack()
     {
-        if (agent.velocity != Vector3.zero)
+        if (!dumbAI)
         {
-            shooterAnimator.SetBool("combatWalk", true);
-            shooterAnimator.SetBool("isWalking", false);
-            shooterAnimator.SetBool("combatIdle", false);
-        }
-        else if (agent.velocity == Vector3.zero)
-        {
-            shooterAnimator.SetBool("combatWalk", false);
-            shooterAnimator.SetBool("combatIdle", true);
-        }
+            if (agent.velocity != Vector3.zero)
+            {
+                shooterAnimator.SetBool("combatWalk", true);
+                shooterAnimator.SetBool("isWalking", false);
+                shooterAnimator.SetBool("combatIdle", false);
+            }
+            else if (agent.velocity == Vector3.zero)
+            {
+                shooterAnimator.SetBool("combatWalk", false);
+                shooterAnimator.SetBool("combatIdle", true);
+            }
 
+            agent.destination = player.transform.position;
+        }
+        
         float distanceToPlayer = Vector3.Distance(player.transform.position, agent.transform.position);
-
-        agent.destination = player.transform.position;
 
         if (distanceToPlayer <= shootDistance)
         {
             inShootingDistance = true;
-            agent.SetDestination(transform.position);
+            if (!dumbAI)
+            {
+                agent.SetDestination(transform.position);
+            }
             transform.LookAt(new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z));
             if (!alreadyAttackedShooter)
             {
@@ -374,7 +386,10 @@ public class CowsinsAI : MonoBehaviour
         else if (distanceToPlayer >= shootDistance)
         {
             inShootingDistance = false;
-            agent.isStopped = false;
+            if (!dumbAI)
+            {
+                agent.isStopped = false;
+            }
             shooterAnimator.SetBool("firing", false);
         }
     }

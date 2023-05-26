@@ -27,27 +27,33 @@ namespace cowsins.AI
             if (shieldSlider != null) shieldSlider.gameObject.SetActive(false);
             if (healthSlider != null) healthSlider.gameObject.SetActive(false);
 
-            if (cai.useRagdoll == true)
+            if (cai.useRagdoll)
             {
-                Rigidbody[] rigidBodies = gameObject.GetComponentsInChildren<Rigidbody>();
-
-                foreach (Rigidbody rigidBody in rigidBodies)
-                {
-                    rigidBody.isKinematic = false;
-                }
-
-                cai.enabled = false;
-
-                animator.enabled = false;
-
-                agent.enabled = false;
+                RagdollDeath();
             }
             else
             {
-                Destroy(gameObject);
+                base.Die();
+            }
+        }
+
+        void RagdollDeath()
+        {
+            Rigidbody[] rigidBodies = gameObject.GetComponentsInChildren<Rigidbody>();
+
+            foreach (Rigidbody rigidBody in rigidBodies)
+            {
+                rigidBody.isKinematic = false;
+
+                rigidBody.AddForce(transform.up * 2500);
+                rigidBody.AddForce(transform.right * 1000);
             }
 
-            base.Die();
+            cai.enabled = false;
+
+            animator.enabled = false;
+
+            agent.enabled = false;
         }
 
         public override void Update()
@@ -65,8 +71,9 @@ namespace cowsins.AI
                 animator = gameObject.GetComponent<Animator>();
                 agent = gameObject.GetComponent<NavMeshAgent>();
                 Rigidbody[] rigidBodies = gameObject.GetComponentsInChildren<Rigidbody>();
+
                 foreach (Rigidbody rigidBody in rigidBodies)
-                {
+                { 
                     rigidBody.isKinematic = true;
                 }
             }

@@ -4,8 +4,8 @@ using UnityEngine;
 [CustomEditor(typeof(CowsinsAI))]
 public class CowsinsAIEditor : Editor
 {
-    string[] tabs = { "Variables", "Combat", "Debug" };
-    int currentTab = 0;
+    string[] combatTabs = { "Variables", "Combat", "Debug" };
+    int combatTab = 0;
 
     override public void OnInspectorGUI()
     {
@@ -13,52 +13,62 @@ public class CowsinsAIEditor : Editor
         CowsinsAI cai = target as CowsinsAI;
 
         EditorGUILayout.BeginVertical();
-        currentTab = GUILayout.Toolbar(currentTab, tabs);
+        EditorGUILayout.LabelField("Cowsins AI", EditorStyles.whiteLargeLabel);
+        EditorGUILayout.Space(5);
+        combatTab = GUILayout.Toolbar(combatTab, combatTabs);
         EditorGUILayout.Space(10f);
         EditorGUILayout.EndVertical();
 
-        if (currentTab >= 0 || currentTab < tabs.Length)
+        //if(cai.AIType == CowsinsAI.Type.Hostile) {
+        if (combatTab >= 0 || combatTab < combatTabs.Length)
         {
-            switch (tabs[currentTab])
+            switch (combatTabs[combatTab])
             {
                 case "Variables":
+                    EditorGUILayout.Space(5);
+                    EditorGUI.indentLevel++;
                     EditorGUILayout.LabelField("BASIC VARIABLES", EditorStyles.boldLabel);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("currentState"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("waitTime"));
                     EditorGUILayout.Space(5);
-                    EditorGUILayout.PropertyField(serializedObject.FindProperty("useWaypoints"));
-                    EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("useRagdoll"));
                     EditorGUILayout.Space(5);
-                    if (cai.useWaypoints == true)
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("dumbAI"));
+                    EditorGUILayout.Space(5);
+                    if (cai.dumbAI == false)
                     {
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("waypoints"));
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty("useWaypoints"));
                         EditorGUILayout.Space(5);
-                    }
-                    else
-                    {
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("wanderRadius"));
-                        EditorGUILayout.Space(5);
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("minWanderDistance"));
-                        EditorGUILayout.Space(5);
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("maxWanderDistance"));
-                        EditorGUILayout.Space(5);
+                        if (cai.useWaypoints == true)
+                        {
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("waypoints"));
+                            EditorGUILayout.Space(5);
+                        }
+                        else
+                        {
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("wanderRadius"));
+                            EditorGUILayout.Space(5);
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("minWanderDistance"));
+                            EditorGUILayout.Space(5);
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("maxWanderDistance"));
+                            EditorGUILayout.Space(5);
+                        }
                     }
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("searchRadius"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("searchAngle"));
-                    EditorGUILayout.Space(5);
-                    EditorGUILayout.PropertyField(serializedObject.FindProperty("player"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("targetMask"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("obstructionMask"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("waitTimeToSearch"));
+                    EditorGUI.indentLevel--;
                     break;
                 case "Combat":
                     EditorGUILayout.LabelField("COMBAT OPTIONS", EditorStyles.boldLabel);
+                    EditorGUILayout.LabelField("Note: Both Shooter AND Melee cannot be enabled at the same time or there will be an error!", EditorStyles.helpBox);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("shooter"));
                     if (cai.shooter == true)
                     {
@@ -112,16 +122,17 @@ public class CowsinsAIEditor : Editor
                     break;
             }
             EditorGUILayout.Space(10f);
-
-            serializedObject.ApplyModifiedProperties();
         }
+
+        serializedObject.ApplyModifiedProperties();
+
     }
 
     void OnSceneGUI()
     {
         CowsinsAI cai = (CowsinsAI)target;
-        
-        if(cai.searchRadiusDebug == true)
+
+        if (cai.searchRadiusDebug == true)
         {
             Handles.color = Color.white;
             Handles.DrawWireArc(cai.transform.position, Vector3.up, Vector3.forward, 360, cai.searchRadius);
@@ -134,13 +145,13 @@ public class CowsinsAIEditor : Editor
             Handles.DrawLine(cai.transform.position, cai.transform.position + searchViewAngle02 * cai.searchRadius);
         }
 
-        if(cai.attackRadiusDebug == true)
+        if (cai.attackRadiusDebug == true)
         {
             Vector3 attackViewAngle01 = DirectionFromAngle(cai.transform.eulerAngles.y, -cai.searchAngle / 2);
             Vector3 attackViewAngle02 = DirectionFromAngle(cai.transform.eulerAngles.y, cai.searchAngle / 2);
         }
-        
-        if(cai.canSeePlayerDebug == true)
+
+        if (cai.canSeePlayerDebug == true)
         {
             if (cai.canSeePlayer)
             {
@@ -148,8 +159,8 @@ public class CowsinsAIEditor : Editor
                 Handles.DrawLine(cai.transform.position, cai.player.transform.position);
             }
         }
-        
-        if(cai.shootingDistanceDebug == true)
+
+        if (cai.shootingDistanceDebug == true)
         {
             if (cai.inShootingDistance)
             {
