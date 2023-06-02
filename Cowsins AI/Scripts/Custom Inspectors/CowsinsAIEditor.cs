@@ -1,3 +1,4 @@
+using cowsins;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,7 +20,6 @@ public class CowsinsAIEditor : Editor
         EditorGUILayout.Space(10f);
         EditorGUILayout.EndVertical();
 
-        //if(cai.AIType == CowsinsAI.Type.Hostile) {
         if (combatTab >= 0 || combatTab < combatTabs.Length)
         {
             switch (combatTabs[combatTab])
@@ -57,6 +57,13 @@ public class CowsinsAIEditor : Editor
                     }
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("searchRadius"));
                     EditorGUILayout.Space(5);
+                    EditorGUILayout.PropertyField(serializedObject.FindProperty("increaseSightOnAttack"));
+                    EditorGUILayout.Space(5);
+                    if (cai.increaseSightOnAttack)
+                    {
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty("searchAngleAfterAttack")); ;
+                        EditorGUILayout.Space(5);
+                    }
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("searchAngle"));
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("targetMask"));
@@ -74,24 +81,40 @@ public class CowsinsAIEditor : Editor
                     {
                         EditorGUILayout.LabelField("SHOOTER OPTIONS", EditorStyles.boldLabel);
                         EditorGUI.indentLevel++;
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("projectile"));
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty("type"));
                         EditorGUILayout.Space(5);
+                        if (cai.type == CowsinsAI.ShooterType.Projectile)
+                        {
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("projectile"));
+                            EditorGUILayout.Space(10);
+                        }
+                        else if (cai.type == CowsinsAI.ShooterType.Hitscan)
+                        {
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("bulletTrail"));
+                            EditorGUILayout.Space(5);
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("spreadAmount"));
+                            EditorGUILayout.Space(5);
+                            EditorGUILayout.PropertyField(serializedObject.FindProperty("hitMask"));
+                            EditorGUILayout.Space(10);
+                        }
+                        EditorGUILayout.LabelField("UNIVERSAL COMBAT VARIABLES", EditorStyles.boldLabel);
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("firePoint"));
                         EditorGUILayout.Space(5);
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("shooterAnimator"));
                         EditorGUILayout.Space(5);
-                        EditorGUILayout.PropertyField(serializedObject.FindProperty("timeBetweenAttacks"));
-                        EditorGUILayout.Space(5);
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("shootDistance"));
                         EditorGUILayout.Space(5);
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("inShootingDistance"));
+                        EditorGUILayout.Space(5);
+                        EditorGUILayout.PropertyField(serializedObject.FindProperty("timeBetweenShots"));
+                        EditorGUILayout.Space(5);
                         EditorGUI.indentLevel--;
                     }
                     EditorGUILayout.Space(5);
                     EditorGUILayout.PropertyField(serializedObject.FindProperty("melee"));
-                    EditorGUILayout.Space(5);
                     if (cai.melee == true)
                     {
+                        EditorGUILayout.Space(5);
                         EditorGUILayout.LabelField("MELEE OPTIONS", EditorStyles.boldLabel);
                         EditorGUI.indentLevel++;
                         EditorGUILayout.PropertyField(serializedObject.FindProperty("meleeDistance"));
@@ -162,6 +185,9 @@ public class CowsinsAIEditor : Editor
 
         if (cai.shootingDistanceDebug == true)
         {
+            Handles.color = Color.red;
+            Handles.DrawWireArc(cai.transform.position, Vector3.up, Vector3.forward, 360, cai.shootDistance);
+
             if (cai.inShootingDistance)
             {
                 Handles.color = Color.red;
@@ -174,6 +200,7 @@ public class CowsinsAIEditor : Editor
             if (cai.inMeleeDistance)
             {
                 Handles.color = Color.red;
+                Handles.DrawWireArc(cai.transform.position, Vector3.up, Vector3.forward, 360, cai.meleeDistance);
                 Handles.DrawLine(cai.transform.position, cai.player.transform.position);
             }
         }

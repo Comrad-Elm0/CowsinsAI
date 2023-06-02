@@ -44,9 +44,6 @@ namespace cowsins.AI
             foreach (Rigidbody rigidBody in rigidBodies)
             {
                 rigidBody.isKinematic = false;
-
-                rigidBody.AddForce(transform.up * 2500);
-                rigidBody.AddForce(transform.right * 1000);
             }
 
             cai.enabled = false;

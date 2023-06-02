@@ -1,4 +1,6 @@
+using cowsins;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -45,6 +47,9 @@ public class CowsinsAI : MonoBehaviour
     [Tooltip("The radius in what the AI can see")] public float searchRadius;
     [Range(0, 360)]
     [Tooltip("The FOV of what the AI can see")] public float searchAngle;
+    public bool increaseSightOnAttack;
+    [Range(0, 360)]
+    [Tooltip("What FOV to set to after attack")] public float searchAngleAfterAttack;
 
     [HideInInspector] public GameObject player;
 
@@ -70,13 +75,29 @@ public class CowsinsAI : MonoBehaviour
     #endregion
 
     #region Shooter Variables
-    [Tooltip("The projectile prefab that the AI will use")]public GameObject projectile;
+    [Tooltip("The projectile prefab that the AI will use")] public GameObject projectile;
     [Tooltip("Where the bullet will shoot from")] public Transform firePoint;
     [Tooltip("How far the AI should shoot from")] public float shootDistance;
     public bool inShootingDistance;
-    [Tooltip("How long the AI should wait inbetween each shot")] public float timeBetweenAttacks;
-    bool alreadyAttackedShooter;
-    bool alreadyAttackedMelee;
+    [Tooltip("How long the AI should wait inbetween each shot")] public float timeBetweenShots;
+
+    #region Hitscan
+
+    [Tooltip("What shooting method it should use (Hitscan / Projectile)")] public ShooterType type;
+    [Tooltip("Prefab that has a 'TrailRenderer' on. View the 'Prefabs' folder for example")] public TrailRenderer bulletTrail;
+    [Tooltip("How much the bullets should spread")] public float spreadAmount;
+    [Tooltip("What the raycast will hit")] public LayerMask hitMask;
+
+    public enum ShooterType
+    {
+        Projectile,
+        Hitscan
+    }
+
+    #endregion
+
+    bool attackedShooterHitscan;
+    bool attackedShooterProjectile;
     #endregion
 
     #region Melee Variables
@@ -84,6 +105,7 @@ public class CowsinsAI : MonoBehaviour
     [Tooltip("How long the AI will wait inbetween attacks")] public float waitBetweenAttack;
     public float waitBetweenSwingDelay;
     [Tooltip("How far the AI will stand from the player whilst attacking")] public float meleeDistance;
+    bool alreadyAttackedMelee;
     public bool inMeleeDistance;
     #endregion
 
@@ -211,6 +233,11 @@ public class CowsinsAI : MonoBehaviour
         {
             currentState = States.Attack;
         }
+
+        if (increaseSightOnAttack)
+        {
+            searchAngle = searchAngleAfterAttack;
+        }
     }
 
     #region Field Of View Functions
@@ -321,7 +348,7 @@ public class CowsinsAI : MonoBehaviour
     {
         if (shooter == true)
         {
-            ShooterAttack();
+            Shooter();
         }
 
         else if (melee == true)
@@ -334,17 +361,29 @@ public class CowsinsAI : MonoBehaviour
             currentState = States.Search;
         }
 
+        if (increaseSightOnAttack)
+        {
+            searchAngle = searchAngleAfterAttack;
+        }
+
     }
 
     // Shooter Functions
-    void ResetAttackShooter()
+    void ResetAttackProjectileShooter()
     {
-        alreadyAttackedShooter = false;
+        attackedShooterProjectile = false;
 
         shooterAnimator.SetBool("firing", false);
     }
-    
-    void ShooterAttack()
+
+    void ResetAttackHitscanShooter()
+    {
+        attackedShooterHitscan = false;
+
+        shooterAnimator.SetBool("firing", false);
+    }
+
+    void Shooter()
     {
         if (!dumbAI)
         {
@@ -362,37 +401,99 @@ public class CowsinsAI : MonoBehaviour
 
             agent.destination = player.transform.position;
         }
-        
+
         float distanceToPlayer = Vector3.Distance(player.transform.position, agent.transform.position);
 
         if (distanceToPlayer <= shootDistance)
         {
             inShootingDistance = true;
-            if (!dumbAI)
-            {
-                agent.SetDestination(transform.position);
-            }
+
+            agent.SetDestination(transform.position);
             transform.LookAt(new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z));
-            if (!alreadyAttackedShooter)
+
+            if (!attackedShooterHitscan)
             {
-                Rigidbody rb = Instantiate(projectile, firePoint.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
-                rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
-                rb.AddForce(transform.up * 2f, ForceMode.Impulse);
-                alreadyAttackedShooter = true;
-                Invoke(nameof(ResetAttackShooter), timeBetweenAttacks);
-                shooterAnimator.SetBool("firing", true);
+                if (type == ShooterType.Hitscan)
+                {
+                    Hitscan();
+                    attackedShooterHitscan = true;
+                    Invoke(nameof(ResetAttackHitscanShooter), timeBetweenShots);
+                    shooterAnimator.SetBool("firing", true);
+                }
+            }
+
+            if (!attackedShooterProjectile)
+            {
+                if (type == ShooterType.Projectile)
+                {
+                    ProjectileShoot();
+                    attackedShooterProjectile = true;
+                    Invoke(nameof(ResetAttackProjectileShooter), timeBetweenShots);
+                    shooterAnimator.SetBool("firing", true);
+                }
             }
         }
         else if (distanceToPlayer >= shootDistance)
         {
             inShootingDistance = false;
-            if (!dumbAI)
-            {
-                agent.isStopped = false;
-            }
+            agent.isStopped = false;
             shooterAnimator.SetBool("firing", false);
         }
     }
+
+    void Hitscan()
+    {
+        Ray ray = new Ray(firePoint.position, GetSpreadDirection(spreadAmount, transform.forward));
+
+        RaycastHit hit;
+        if (Physics.Raycast(ray, out hit, shootDistance, hitMask))
+        {
+            if (hit.transform.gameObject.CompareTag("Player"))
+            {
+                TrailRenderer trail = Instantiate(bulletTrail, firePoint.position, Quaternion.identity);
+
+                StartCoroutine(SpawnTrail(trail, hit));
+
+                hit.transform.gameObject.GetComponent<PlayerStats>().Damage(1);
+                Debug.Log(hit.transform.name);
+            }
+        }
+    }
+
+    public static Vector3 GetSpreadDirection(float amount, Vector3 dir)
+    {
+        float horSpread = Random.Range(-amount, amount);
+        float verSpread = Random.Range(-amount, amount);
+        Vector3 finalDir = new Vector3(dir.x * horSpread, dir.y * verSpread, dir.z);
+
+        return finalDir;
+    }
+
+    IEnumerator SpawnTrail(TrailRenderer trail, RaycastHit hit)
+    {
+        float time = 0;
+        Vector3 startPosition = trail.transform.position;
+
+        while (time < 1)
+        {
+            trail.transform.position = Vector3.Lerp(startPosition, hit.point, time);
+            time += Time.deltaTime / trail.time;
+
+            yield return null;
+        }
+        trail.transform.position = hit.point;
+
+        Destroy(trail.gameObject, trail.time);
+    }
+
+    void ProjectileShoot()
+    {
+        Rigidbody rb = Instantiate(projectile, firePoint.transform.position, Quaternion.identity).GetComponent<Rigidbody>();
+        rb.AddForce(transform.forward * 32f, ForceMode.Impulse);
+        rb.AddForce(transform.up * 2f, ForceMode.Impulse);
+    }
+
+
 
     // Melee Functions
     void ResetAttackMelee()
@@ -447,8 +548,5 @@ public class CowsinsAI : MonoBehaviour
             meleeAnimator.SetBool("attacking", false);
         }
     }
-
-    
-
     #endregion
 }
